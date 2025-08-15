@@ -9,6 +9,10 @@ const authMiddleware = require("./authmiddleware");
 const upload = multer({ dest: "uploads/" });
 
 router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({ message: "Access denied. Admins only." });
+  }
+
   try {
     let imageUrl = null;
 
@@ -29,12 +33,19 @@ router.post("/", authMiddleware, upload.single("image"), async (req, res) => {
 
     res.status(201).json(newPost);
   } catch (err) {
+    console.error("Error creating post:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-router.get("/", (req, res) => {
-  res.send("yes");
+router.get("/", async (req, res) => {
+  try {
+    const posts = await postSchema.find().populate("author", "username email");
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error("Error fetching posts:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

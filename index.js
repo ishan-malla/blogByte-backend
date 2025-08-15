@@ -90,6 +90,7 @@ app.post("/login", async (req, res) => {
 
     res.status(200).json({ message: "Login successful", access_token: token });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).send("Something went wrong");
   }
 });
