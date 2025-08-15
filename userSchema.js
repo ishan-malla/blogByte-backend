@@ -1,10 +1,4 @@
 const mongoose = require("mongoose");
-
-mongoose
-  .connect("mongodb://localhost:27017/blogByte")
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Error connecting to MongoDB:", err));
-
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -31,6 +25,6 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const Collection = mongoose.model("UserCollection", userSchema);
+const userCollection = mongoose.model("UserCollection", userSchema);
 
-module.exports = Collection;
+module.exports = userCollection;
