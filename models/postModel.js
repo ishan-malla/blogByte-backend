@@ -28,6 +28,4 @@ const postSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const postCollection = mongoose.model("postCollection", postSchema);
-
-module.exports = postCollection;
+module.exports = mongoose.model("Post", postSchema);
