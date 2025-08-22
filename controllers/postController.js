@@ -19,6 +19,7 @@ exports.createPost = async (req, res) => {
 
     const newPost = await Post.create({
       title: req.body.title,
+      snippet: req.body.snippet,
       content: req.body.content,
       author: req.user.id,
       image: imageUrl,
@@ -41,18 +42,19 @@ exports.getPosts = async (req, res) => {
 
 exports.getPostById = async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id).populate(
-      "author",
-      "username email"
-    );
-    if (!post) return res.status(404).json({ message: "Post not found" });
+    const post = await Post.findById(req.params.id)
+      .populate("author", "name")
+      .populate("comments.user", "username email");
 
-    res.status(200).json(post);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    if (!post) {
+      return res.status(404).json({ message: "Post not found" });
+    }
+
+    res.json(post);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
-
 exports.updatePost = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Access denied. Admins only." });
@@ -72,6 +74,7 @@ exports.updatePost = async (req, res) => {
       req.params.id,
       {
         title: req.body.title,
+        snippet: req.body.snippet,
         content: req.body.content,
         ...(imageUrl && { image: imageUrl }),
       },
@@ -87,7 +90,6 @@ exports.updatePost = async (req, res) => {
   }
 };
 
-// ✅ Delete post
 exports.deletePost = async (req, res) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Access denied. Admins only." });
