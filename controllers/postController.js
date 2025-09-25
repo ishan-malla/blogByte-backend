@@ -43,7 +43,7 @@ exports.getPosts = async (req, res) => {
 exports.getPostById = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id)
-      .populate("author", "name")
+      .populate("author", "username")
       .populate("comments.user", "username email");
 
     if (!post) {
